@@ -1,0 +1,270 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  METHODIST
+  TEACHER
+  STUDENT
+}
+
+enum UserStatus {
+  ACTIVE
+  BLOCKED
+  ARCHIVED
+}
+
+enum GroupStatus {
+  ACTIVE
+  ARCHIVED
+}
+
+enum TestContainerStatus {
+  ACTIVE
+  ARCHIVED
+}
+
+enum TestVersionStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum QuestionType {
+  SINGLE_CHOICE
+  MULTIPLE_CHOICE
+  TRUE_FALSE
+  TEXT_ANSWER
+}
+
+enum ScoringMode {
+  FULL_MATCH
+  PARTIAL
+}
+
+enum AttemptStatus {
+  IN_PROGRESS
+  COMPLETED
+  EXPIRED
+  ABANDONED
+}
+
+enum AssignmentStatus {
+  ACTIVE
+  CLOSED
+}
+
+model User {
+  id           String     @id @default(uuid())
+  login        String     @unique
+  passwordHash String
+  firstName    String
+  lastName     String
+  middleName   String?
+  role         Role
+  status       UserStatus @default(ACTIVE)
+
+  groupId String?
+  group   Group?  @relation(fields: [groupId], references: [id])
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  lastLoginAt DateTime?
+
+  testsAuthored      Test[]              @relation("TestAuthor")
+  versionsCreated    TestVersion[]       @relation("VersionAuthor")
+  assignmentsCreated TestAssignment[]
+  assignmentTargets  AssignmentStudent[]
+  attempts           Attempt[]
+  auditLogs          AuditLog[]
+
+  @@index([groupId])
+  @@index([role])
+}
+
+model Group {
+  id        String      @id @default(uuid())
+  name      String      @unique
+  status    GroupStatus @default(ACTIVE)
+  createdAt DateTime    @default(now())
+
+  students         User[]
+  assignmentGroups AssignmentGroup[]
+}
+
+model Test {
+  id          String               @id @default(uuid())
+  title       String
+  description String?
+  subject     String
+  topic       String?
+  authorId    String
+  author      User                 @relation("TestAuthor", fields: [authorId], references: [id])
+  status      TestContainerStatus  @default(ACTIVE)
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+
+  versions TestVersion[]
+
+  @@index([authorId])
+}
+
+model TestVersion {
+  id            String             @id @default(uuid())
+  testId        String
+  test          Test               @relation(fields: [testId], references: [id])
+  versionNumber Int
+  status        TestVersionStatus  @default(DRAFT)
+  createdById   String
+  createdBy     User               @relation("VersionAuthor", fields: [createdById], references: [id])
+  createdAt     DateTime           @default(now())
+  publishedAt   DateTime?
+
+  questions   Question[]
+  assignments TestAssignment[]
+
+  @@unique([testId, versionNumber])
+  @@index([testId])
+}
+
+model Question {
+  id            String       @id @default(uuid())
+  testVersionId String
+  testVersion   TestVersion  @relation(fields: [testVersionId], references: [id])
+  type          QuestionType
+  text          String
+  explanation   String?
+  points        Int          @default(1)
+  order         Int
+
+  scoringMode         ScoringMode?
+  correctTextAnswers  String[]     @default([])
+
+  answers        Answer[]
+  studentAnswers StudentAnswer[]
+
+  @@index([testVersionId])
+}
+
+model Answer {
+  id         String   @id @default(uuid())
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id])
+  text       String
+  isCorrect  Boolean  @default(false)
+  order      Int
+
+  @@index([questionId])
+}
+
+model TestAssignment {
+  id            String      @id @default(uuid())
+  testVersionId String
+  testVersion   TestVersion @relation(fields: [testVersionId], references: [id])
+  createdById   String
+  createdBy     User        @relation(fields: [createdById], references: [id])
+  title         String?
+
+  availableFrom      DateTime?
+  availableUntil     DateTime?
+  timeLimitMinutes   Int?
+  attemptsAllowed    Int              @default(1)
+  questionCount      Int? // null = use every question in the version's bank; otherwise draw this many at random per attempt
+  randomizeQuestions Boolean          @default(false)
+  randomizeAnswers   Boolean          @default(false)
+  showResult         Boolean          @default(true)
+  showCorrectAnswers Boolean          @default(false)
+  allowResume        Boolean          @default(true)
+  status             AssignmentStatus @default(ACTIVE)
+  createdAt          DateTime         @default(now())
+
+  groups   AssignmentGroup[]
+  students AssignmentStudent[] // individually-targeted students, in addition to (or instead of) whole groups
+  attempts Attempt[]
+
+  @@index([testVersionId])
+}
+
+model AssignmentGroup {
+  id           String         @id @default(uuid())
+  assignmentId String
+  assignment   TestAssignment @relation(fields: [assignmentId], references: [id])
+  groupId      String
+  group        Group          @relation(fields: [groupId], references: [id])
+
+  @@unique([assignmentId, groupId])
+  @@index([groupId])
+}
+
+model AssignmentStudent {
+  id           String         @id @default(uuid())
+  assignmentId String
+  assignment   TestAssignment @relation(fields: [assignmentId], references: [id])
+  studentId    String
+  student      User           @relation(fields: [studentId], references: [id])
+
+  @@unique([assignmentId, studentId])
+  @@index([studentId])
+}
+
+model Attempt {
+  id            String        @id @default(uuid())
+  assignmentId  String
+  assignment    TestAssignment @relation(fields: [assignmentId], references: [id])
+  studentId     String
+  student       User          @relation(fields: [studentId], references: [id])
+  attemptNumber Int
+  status        AttemptStatus @default(IN_PROGRESS)
+  questionOrder String[]      @default([])
+
+  startedAt       DateTime  @default(now())
+  completedAt     DateTime?
+  score           Int?
+  maxScore        Int?
+  percentage      Float?
+  durationSeconds Int?
+
+  answers StudentAnswer[]
+
+  @@unique([assignmentId, studentId, attemptNumber])
+  @@index([studentId])
+  @@index([assignmentId])
+}
+
+model StudentAnswer {
+  id         String   @id @default(uuid())
+  attemptId  String
+  attempt    Attempt  @relation(fields: [attemptId], references: [id])
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id])
+
+  selectedAnswerIds String[] @default([])
+  textAnswer        String?
+  isCorrect         Boolean?
+  pointsAwarded     Int?
+  answeredAt        DateTime @updatedAt
+
+  @@unique([attemptId, questionId])
+  @@index([questionId])
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id])
+  action     String
+  entityType String
+  entityId   String?
+  metadata   Json?
+  createdAt  DateTime @default(now())
+
+  @@index([entityType, entityId])
+  @@index([userId])
+  @@index([createdAt])
+}

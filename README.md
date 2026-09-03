@@ -1,36 +1,127 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TESTARA — система тестирования студентов по онкологии
 
-## Getting Started
+Веб-приложение для проведения тестирования студентов на занятиях по онкологии: администратор управляет пользователями и группами, методист/преподаватель создаёт и назначает тесты, студент проходит тестирование и видит результат.
 
-First, run the development server:
+Стек: Next.js (App Router) + TypeScript + Tailwind CSS, PostgreSQL + Prisma ORM, Auth.js (Credentials), Vitest.
+
+## Роли
+
+- **Администратор** — пользователи, группы, тесты, назначения, результаты, журнал аудита.
+- **Методист** — создание/импорт/публикация тестов, назначение тестирования, результаты.
+- **Преподаватель** — назначение опубликованных тестов, просмотр результатов и статистики.
+- **Студент** — прохождение назначенных тестов, просмотр своего результата.
+
+## Запуск локально
+
+### Требования
+
+- Node.js 20+
+- PostgreSQL 14+ (локально запущенный, либо через Docker — см. ниже)
+
+### Установка
+
+```bash
+npm install
+cp .env.example .env
+```
+
+Отредактируйте `.env`:
+
+```
+DATABASE_URL="postgresql://<пользователь>@localhost:5432/oncology_test_sys"
+AUTH_SECRET="<сгенерировать: openssl rand -base64 32>"
+NEXTAUTH_URL="http://localhost:3000"
+```
+
+Создайте базу данных (если её ещё нет):
+
+```bash
+createdb oncology_test_sys
+```
+
+### Миграции и сидирование
+
+```bash
+npx prisma migrate dev
+npx prisma db seed
+```
+
+### Запуск
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Приложение будет доступно на [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Первые учётные записи (после сидирования)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Роль          | Логин            | Пароль        |
+| ------------- | ---------------- | ------------- |
+| Администратор | `admin`          | `admin123`    |
+| Методист      | `demo_methodist` | `methodist123`|
+| Преподаватель | `demo_teacher`   | `teacher123`  |
+| Студенты      | `ivanov1` … `fedorova6` | `student123` |
 
-## Learn More
+Группы `401`, `402` уже созданы; демонстрационный тест «Основы онкологии» (13 вопросов всех типов) опубликован и назначен группе `401`.
 
-To learn more about Next.js, take a look at the following resources:
+**Важно:** эти учётные данные предназначены только для локальной разработки/демонстрации. Перед развёртыванием в реальном окружении смените пароли и не используйте seed-скрипт на продакшн-базе.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Запуск через Docker
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+cp .env.example .env   # укажите AUTH_SECRET
+docker compose up --build
+```
 
-## Deploy on Vercel
+Поднимутся два контейнера: `db` (PostgreSQL) и `app` (Next.js). При старте `app` автоматически применяет миграции (`prisma migrate deploy`) и выполняет сидирование. Приложение будет доступно на [http://localhost:3000](http://localhost:3000).
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Импорт из Excel
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Импорт студентов (Админ → Пользователи → Импорт из Excel)
+
+Файл `.xlsx` или `.csv` со столбцами (порядок и названия любые — сопоставляются в мастере импорта):
+
+| ФИО                  | Логин   | Пароль      | Группа |
+| -------------------- | ------- | ----------- | ------ |
+| Иванов Иван Иванович | ivanov1 | password123 | 401    |
+
+Столбец «Пароль» необязателен — если не указан, пароль генерируется автоматически и показывается в итоговом отчёте. Несуществующие группы создаются автоматически. При совпадении логина с уже существующим пользователем мастер предлагает пропустить строку или обновить данные существующего пользователя.
+
+### Импорт теста (Методист/Админ → Тесты → Импорт из Excel)
+
+Файл со столбцами: вопрос, варианты ответов (любое количество столбцов, определяются в мастере), правильный ответ. Правильный ответ можно указать номером (`1`, `2`…), буквой (`А`/`A`, `Б`/`B`…) или полным текстом варианта; несколько значений через запятую создают вопрос с несколькими правильными ответами.
+
+## Версионность тестов
+
+Публикация версии теста делает её вопросы неизменяемыми — результаты пройденных попыток всегда привязаны к той версии, которую проходил студент. Чтобы изменить опубликованный тест, создайте новую версию (клонирует текущие вопросы в черновик) — предыдущая версия и все результаты по ней остаются нетронутыми.
+
+## Тесты и проверка
+
+```bash
+npm test          # unit + integration тесты (Vitest, требуется доступная DATABASE_URL)
+npx tsc --noEmit   # проверка типов
+npm run lint       # ESLint
+npm run build      # production-сборка
+```
+
+Интеграционные тесты обращаются к реальной базе данных, указанной в `DATABASE_URL`, и создают/удаляют собственные тестовые записи (с префиксом `IT:`/`TEST-`) — не запускайте их на продакшн-базе.
+
+## Резервное копирование
+
+```bash
+# создать резервную копию
+pg_dump -Fc oncology_test_sys > backup.dump
+
+# восстановить
+pg_restore -d oncology_test_sys --clean backup.dump
+```
+
+Пользователи, группы и тесты архивируются (мягкое удаление), а не удаляются физически — исторические результаты и журнал аудита сохраняются всегда.
+
+## Известные ограничения текущей версии
+
+- Импорт Excel поддерживает `.xlsx` и `.csv`; устаревший бинарный формат `.xls` не читается (библиотека `exceljs` его не поддерживает — сознательный выбор в пользу безопасности: пакет `xlsx`/SheetJS, который умеет читать `.xls`, содержит неисправленные уязвимости).
+- Печать результатов и сводных отчётов использует системную печать браузера («Печать → Сохранить как PDF»); отдельного серверного генератора PDF нет.
+- Расширенные типы вопросов (изображения, сопоставление, последовательность, свободный текст с AI-проверкой) не реализованы — архитектура (`QuestionType`, редактор, `scoring.ts`) рассчитана на добавление новых типов без переделки существующих.
+- Аудит-лог не поддерживает фильтр по пользователю/дате в интерфейсе (только по типу действия) — данные для таких фильтров уже пишутся и доступны через прямой запрос к БД.

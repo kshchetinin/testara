@@ -1,0 +1,3 @@
+module.exports=[35744,a=>a.a(async(b,c)=>{try{var d=a.i(97861),e=b([d]);[d]=e.then?(await e)():e,a.s([]),c()}catch(a){c(a)}},!1),12017,a=>a.a(async(b,c)=>{try{var d=a.i(35744),e=a.i(97861),f=b([d,e]);[d,e]=f.then?(await f)():f,a.s(["00d588f4cb6560ba6303ae9ff35aec7c2d57231ab0",()=>e.$$RSC_SERVER_ACTION_0]),c()}catch(a){c(a)}},!1)];
+
+//# sourceMappingURL=1oeh_server_app_teacher_results_attempt_%5BattemptId%5D_page_actions_065j-6s.js.map

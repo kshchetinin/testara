@@ -1,0 +1,16 @@
+{
+  "node": {
+    "00d588f4cb6560ba6303ae9ff35aec7c2d57231ab0": {
+      "workers": {
+        "app/teacher/groups/[id]/page": {
+          "moduleId": 2587,
+          "async": true,
+          "codeHash": null
+        }
+      },
+      "exportedName": "$$RSC_SERVER_ACTION_0",
+      "filename": "src/components/shared/logout-button.tsx"
+    }
+  },
+  "edge": {}
+}
