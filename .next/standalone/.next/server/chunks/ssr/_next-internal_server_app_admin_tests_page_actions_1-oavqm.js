@@ -1,3 +1,3 @@
-module.exports=[36734,a=>a.a(async(b,c)=>{try{var d=a.i(97861),e=b([d]);[d]=e.then?(await e)():e,a.s([]),c()}catch(a){c(a)}},!1),39105,a=>a.a(async(b,c)=>{try{var d=a.i(36734),e=a.i(97861),f=b([d,e]);[d,e]=f.then?(await f)():f,a.s(["0011415680c89d0d20408b3924f82c5658f1bd9a88",()=>e.$$RSC_SERVER_ACTION_0]),c()}catch(a){c(a)}},!1)];
+module.exports=[36734,a=>a.a(async(b,c)=>{try{var d=a.i(97861),e=b([d]);[d]=e.then?(await e)():e,a.s([]),c()}catch(a){c(a)}},!1),39105,a=>a.a(async(b,c)=>{try{var d=a.i(36734),e=a.i(97861),f=b([d,e]);[d,e]=f.then?(await f)():f,a.s(["006de5f99431a30f8c6715beed6acc7a6c4e273d02",()=>e.$$RSC_SERVER_ACTION_0]),c()}catch(a){c(a)}},!1)];
 
 //# sourceMappingURL=_next-internal_server_app_admin_tests_page_actions_1-oavqm.js.map

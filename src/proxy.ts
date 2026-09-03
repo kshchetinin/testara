@@ -11,7 +11,15 @@ const ROLE_HOME: Record<string, string> = {
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const token = await getToken({ req: request, secret: process.env.AUTH_SECRET });
+  // Without this, getToken() defaults to secureCookie: false and looks for the
+  // unprefixed "authjs.session-token" cookie — but in production (behind Nginx,
+  // always HTTPS) Auth.js actually sets "__Secure-authjs.session-token", so the
+  // lookup silently misses and every request looks unauthenticated.
+  const token = await getToken({
+    req: request,
+    secret: process.env.AUTH_SECRET,
+    secureCookie: process.env.NODE_ENV === "production",
+  });
   const role = token?.role as string | undefined;
 
   const isLoginRoute = pathname === "/login";
