@@ -1,6 +1,6 @@
 {
   "node": {
-    "00d588f4cb6560ba6303ae9ff35aec7c2d57231ab0": {
+    "0011415680c89d0d20408b3924f82c5658f1bd9a88": {
       "workers": {
         "app/admin/assignments/[id]/page": {
           "moduleId": 80376,
@@ -156,7 +156,7 @@
       "filename": "src/components/shared/logout-button.tsx",
       "exportedName": "$$RSC_SERVER_ACTION_0"
     },
-    "603db5984e2daa674801c974401193037fe7ef9c3c": {
+    "6030700061ece9a8a1326126a7b385a65e763a2b29": {
       "workers": {
         "app/login/page": {
           "moduleId": 40246,
@@ -169,5 +169,5 @@
     }
   },
   "edge": {},
-  "encryptionKey": "gKIPRvOi/XIa4S7ZloWTiE9npD3YcZc5nTy/vhwAalg="
+  "encryptionKey": "kWAkVo5GGeqe96+r0rO+lZhTHeQew9rDjgdujg2Ku3E="
 }

@@ -4,6 +4,10 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  // The app sits behind Nginx (reverse proxy) in production, so Auth.js sees
+  // requests as coming from a proxy rather than the trusted NEXTAUTH_URL host
+  // directly — without this it rejects every request with UntrustedHost.
+  trustHost: true,
   session: { strategy: "jwt" },
   pages: { signIn: "/login" },
   providers: [
