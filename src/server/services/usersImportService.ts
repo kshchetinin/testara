@@ -22,9 +22,9 @@ const LOGIN_PATTERN = /^[a-zA-Z0-9_.-]{3,32}$/;
 export async function validateStudentImport(drafts: StudentRecordDraft[]): Promise<StudentValidationResult[]> {
   const logins = drafts.map((d) => d.login).filter(Boolean);
   const existingUsers = logins.length
-    ? await prisma.user.findMany({ where: { login: { in: logins } }, select: { id: true, login: true } })
+    ? await prisma.user.findMany({ where: { login: { in: logins } }, select: { id: true, login: true, role: true } })
     : [];
-  const existingByLogin = new Map(existingUsers.map((u) => [u.login, u.id]));
+  const existingByLogin = new Map(existingUsers.map((u) => [u.login, u]));
 
   const groupNames = [...new Set(drafts.map((d) => d.groupName).filter((g): g is string => !!g))];
   const existingGroups = groupNames.length
@@ -52,9 +52,18 @@ export async function validateStudentImport(drafts: StudentRecordDraft[]): Promi
       }
     }
 
-    const existingUserId = draft.login ? existingByLogin.get(draft.login) ?? null : null;
-    if (existingUserId) {
-      issues.push({ level: "warning", message: "Пользователь с таким логином уже существует" });
+    const existingUser = draft.login ? existingByLogin.get(draft.login) ?? null : null;
+    let existingUserId: string | null = null;
+    if (existingUser) {
+      if (existingUser.role === "STUDENT") {
+        existingUserId = existingUser.id;
+        issues.push({ level: "warning", message: "Пользователь с таким логином уже существует" });
+      } else {
+        // A login collision with a non-student account must never be offered as an
+        // "update" target — that would let this import silently overwrite a staff
+        // member's name/password.
+        issues.push({ level: "error", message: "Логин уже занят пользователем другой роли" });
+      }
     }
 
     const groupExists = draft.groupName ? existingGroupNames.has(draft.groupName) : true;
@@ -120,6 +129,14 @@ export async function commitStudentImport(rows: ImportRowInput[], actorId: strin
         });
         created++;
       } else if (row.action === "update") {
+        // Re-check role at commit time, not just at validation time — the two
+        // steps are separate requests, and this must never overwrite a
+        // non-student account (e.g. one created between validate and commit).
+        const existing = await prisma.user.findUnique({ where: { login: row.login }, select: { role: true } });
+        if (!existing || existing.role !== "STUDENT") {
+          failed.push({ rowIndex: row.rowIndex, message: "Логин принадлежит пользователю другой роли — обновление отклонено" });
+          continue;
+        }
         const data: Record<string, unknown> = {
           firstName: row.firstName,
           lastName: row.lastName,

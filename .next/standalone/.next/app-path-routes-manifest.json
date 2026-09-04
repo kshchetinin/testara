@@ -55,6 +55,8 @@
   "/teacher/page": "/teacher",
   "/teacher/results/attempt/[attemptId]/page": "/teacher/results/attempt/[attemptId]",
   "/teacher/results/page": "/teacher/results",
+  "/teacher/students/import/page": "/teacher/students/import",
+  "/teacher/students/page": "/teacher/students",
   "/teacher/tests/[id]/page": "/teacher/tests/[id]",
   "/teacher/tests/[id]/versions/[versionId]/edit/page": "/teacher/tests/[id]/versions/[versionId]/edit",
   "/teacher/tests/import/page": "/teacher/tests/import",

@@ -1,15 +1,15 @@
 {
   "node": {
-    "006de5f99431a30f8c6715beed6acc7a6c4e273d02": {
+    "00660121682a4e3bc11e4838c93a5a5ee46f1be732": {
       "workers": {
         "app/teacher/assignments/[id]/page": {
-          "moduleId": 29516,
+          "moduleId": 9944,
           "async": true,
           "codeHash": null
         }
       },
-      "exportedName": "$$RSC_SERVER_ACTION_0",
-      "filename": "src/components/shared/logout-button.tsx"
+      "exportedName": "signOutAction",
+      "filename": "src/lib/actions/sign-out.ts"
     }
   },
   "edge": {}

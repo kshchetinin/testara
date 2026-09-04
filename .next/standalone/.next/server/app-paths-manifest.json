@@ -55,6 +55,8 @@
   "/teacher/page": "app/teacher/page.js",
   "/teacher/results/attempt/[attemptId]/page": "app/teacher/results/attempt/[attemptId]/page.js",
   "/teacher/results/page": "app/teacher/results/page.js",
+  "/teacher/students/import/page": "app/teacher/students/import/page.js",
+  "/teacher/students/page": "app/teacher/students/page.js",
   "/teacher/tests/[id]/page": "app/teacher/tests/[id]/page.js",
   "/teacher/tests/[id]/versions/[versionId]/edit/page": "app/teacher/tests/[id]/versions/[versionId]/edit/page.js",
   "/teacher/tests/import/page": "app/teacher/tests/import/page.js",

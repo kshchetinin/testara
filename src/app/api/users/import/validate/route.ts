@@ -16,7 +16,7 @@ const schema = z.object({
 
 export async function POST(request: Request) {
   try {
-    await requireApiRole(["ADMIN"]);
+    await requireApiRole(["ADMIN", "METHODIST"]);
     const body = schema.parse(await request.json());
     const drafts = buildStudentRecords(body.rows, body.mapping);
     const results = await validateStudentImport(drafts);

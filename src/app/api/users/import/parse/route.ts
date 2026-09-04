@@ -5,7 +5,7 @@ import { guessColumnMapping } from "@/lib/excel/students";
 
 export async function POST(request: Request) {
   try {
-    await requireApiRole(["ADMIN"]);
+    await requireApiRole(["ADMIN", "METHODIST"]);
     const formData = await request.formData();
     const file = formData.get("file");
     if (!(file instanceof File)) {

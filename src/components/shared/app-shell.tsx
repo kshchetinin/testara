@@ -2,18 +2,22 @@ import { SidebarNav } from "./sidebar-nav";
 import type { WorkspaceVariant } from "./nav-config";
 import { LogoutButton } from "./logout-button";
 import { Logo } from "./logo";
+import { MobileNav } from "./mobile-nav";
+import type { Role } from "@/generated/prisma/enums";
 
 export function AppShell({
   workspaceLabel,
   userName,
   userSubtitle,
   variant,
+  role,
   children,
 }: {
   workspaceLabel: string;
   userName: string;
   userSubtitle: string;
   variant: WorkspaceVariant;
+  role: Role;
   children: React.ReactNode;
 }) {
   return (
@@ -28,7 +32,7 @@ export function AppShell({
         </div>
 
         <div className="flex-1 overflow-y-auto px-3 py-4">
-          <SidebarNav variant={variant} />
+          <SidebarNav variant={variant} role={role} />
         </div>
 
         <div className="border-t border-border p-3">
@@ -41,6 +45,7 @@ export function AppShell({
       </aside>
 
       <div className="flex min-h-screen w-full flex-col md:pl-64">
+        <MobileNav workspaceLabel={workspaceLabel} userName={userName} userSubtitle={userSubtitle} variant={variant} role={role} />
         <main className="flex-1 p-4 md:p-8">{children}</main>
       </div>
     </div>

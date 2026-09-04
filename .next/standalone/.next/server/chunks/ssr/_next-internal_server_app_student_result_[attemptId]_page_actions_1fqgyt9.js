@@ -1,0 +1,3 @@
+module.exports=[18075,a=>a.a(async(b,c)=>{try{var d=a.i(60627),e=b([d]);[d]=e.then?(await e)():e,a.s([]),c()}catch(a){c(a)}},!1),70500,a=>a.a(async(b,c)=>{try{var d=a.i(18075),e=a.i(60627),f=b([d,e]);[d,e]=f.then?(await f)():f,a.s(["00660121682a4e3bc11e4838c93a5a5ee46f1be732",()=>e.signOutAction]),c()}catch(a){c(a)}},!1)];
+
+//# sourceMappingURL=_next-internal_server_app_student_result_%5BattemptId%5D_page_actions_1fqgyt9.js.map

@@ -9,7 +9,13 @@ export default async function StudentLayout({ children }: { children: React.Reac
   if (session.user.role !== "STUDENT") redirect(roleHome(session.user.role));
 
   return (
-    <AppShell workspaceLabel="Студент" userName={session.user.name} userSubtitle={roleLabel(session.user.role)} variant="student">
+    <AppShell
+      workspaceLabel="Студент"
+      userName={session.user.name}
+      userSubtitle={roleLabel(session.user.role)}
+      variant="student"
+      role={session.user.role}
+    >
       {children}
     </AppShell>
   );

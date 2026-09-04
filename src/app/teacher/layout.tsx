@@ -14,6 +14,7 @@ export default async function TeacherLayout({ children }: { children: React.Reac
       userName={session.user.name}
       userSubtitle={roleLabel(session.user.role)}
       variant="teacher"
+      role={session.user.role}
     >
       {children}
     </AppShell>

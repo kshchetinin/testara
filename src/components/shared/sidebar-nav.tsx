@@ -5,16 +5,20 @@ import { usePathname } from "next/navigation";
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { NAV_CONFIG, type WorkspaceVariant } from "./nav-config";
+import type { Role } from "@/generated/prisma/enums";
 
 export interface NavItem {
   href: string;
   label: string;
   icon: LucideIcon;
+  /** Restricts visibility within a shared workspace variant (e.g. "teacher" is
+   * used by both METHODIST and TEACHER). Omit to show to everyone in that variant. */
+  roles?: Role[];
 }
 
-export function SidebarNav({ variant }: { variant: WorkspaceVariant }) {
+export function SidebarNav({ variant, role }: { variant: WorkspaceVariant; role: Role }) {
   const pathname = usePathname();
-  const items = NAV_CONFIG[variant];
+  const items = NAV_CONFIG[variant].filter((item) => !item.roles || item.roles.includes(role));
 
   return (
     <nav className="flex flex-col gap-1">

@@ -1,0 +1,16 @@
+{
+  "node": {
+    "00660121682a4e3bc11e4838c93a5a5ee46f1be732": {
+      "workers": {
+        "app/teacher/students/import/page": {
+          "moduleId": 50467,
+          "async": true,
+          "codeHash": null
+        }
+      },
+      "exportedName": "signOutAction",
+      "filename": "src/lib/actions/sign-out.ts"
+    }
+  },
+  "edge": {}
+}

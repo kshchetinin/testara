@@ -30,7 +30,7 @@ const initialForm = {
   groupId: "",
 };
 
-export function CreateUserDialog({ groups }: { groups: GroupOption[] }) {
+export function CreateUserDialog({ groups, studentOnly = false }: { groups: GroupOption[]; studentOnly?: boolean }) {
   const router = useRouter();
   const { toast } = useToast();
   const [open, setOpen] = React.useState(false);
@@ -75,12 +75,12 @@ export function CreateUserDialog({ groups }: { groups: GroupOption[] }) {
     <>
       <Button onClick={() => setOpen(true)}>
         <Plus className="h-4 w-4" />
-        Добавить пользователя
+        {studentOnly ? "Добавить студента" : "Добавить пользователя"}
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogHeader>
-          <DialogTitle>Новый пользователь</DialogTitle>
+          <DialogTitle>{studentOnly ? "Новый студент" : "Новый пользователь"}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div className="grid grid-cols-2 gap-3">
@@ -98,30 +98,44 @@ export function CreateUserDialog({ groups }: { groups: GroupOption[] }) {
             <Input value={form.middleName} onChange={(e) => set("middleName", e.target.value)} />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          {studentOnly ? (
             <div className="flex flex-col gap-1.5">
-              <Label>Роль</Label>
-              <Select value={form.role} onChange={(e) => set("role", e.target.value)}>
-                <option value="STUDENT">Студент</option>
-                <option value="TEACHER">Преподаватель</option>
-                <option value="METHODIST">Методист</option>
-                <option value="ADMIN">Администратор</option>
+              <Label>Группа</Label>
+              <Select value={form.groupId} onChange={(e) => set("groupId", e.target.value)}>
+                <option value="">Без группы</option>
+                {groups.map((g) => (
+                  <option key={g.id} value={g.id}>
+                    {g.name}
+                  </option>
+                ))}
               </Select>
             </div>
-            {form.role === "STUDENT" && (
+          ) : (
+            <div className="grid grid-cols-2 gap-3">
               <div className="flex flex-col gap-1.5">
-                <Label>Группа</Label>
-                <Select value={form.groupId} onChange={(e) => set("groupId", e.target.value)}>
-                  <option value="">Без группы</option>
-                  {groups.map((g) => (
-                    <option key={g.id} value={g.id}>
-                      {g.name}
-                    </option>
-                  ))}
+                <Label>Роль</Label>
+                <Select value={form.role} onChange={(e) => set("role", e.target.value)}>
+                  <option value="STUDENT">Студент</option>
+                  <option value="TEACHER">Преподаватель</option>
+                  <option value="METHODIST">Методист</option>
+                  <option value="ADMIN">Администратор</option>
                 </Select>
               </div>
-            )}
-          </div>
+              {form.role === "STUDENT" && (
+                <div className="flex flex-col gap-1.5">
+                  <Label>Группа</Label>
+                  <Select value={form.groupId} onChange={(e) => set("groupId", e.target.value)}>
+                    <option value="">Без группы</option>
+                    {groups.map((g) => (
+                      <option key={g.id} value={g.id}>
+                        {g.name}
+                      </option>
+                    ))}
+                  </Select>
+                </div>
+              )}
+            </div>
+          )}
 
           <div className="flex flex-col gap-1.5">
             <Label>Логин</Label>

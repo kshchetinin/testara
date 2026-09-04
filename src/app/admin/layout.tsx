@@ -14,6 +14,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       userName={session.user.name}
       userSubtitle={roleLabel(session.user.role)}
       variant="admin"
+      role={session.user.role}
     >
       {children}
     </AppShell>

@@ -41,8 +41,12 @@ const createSchema = z.object({
 
 export async function POST(request: Request) {
   try {
-    const session = await requireApiRole(["ADMIN"]);
+    const session = await requireApiRole(["ADMIN", "METHODIST"]);
     const body = createSchema.parse(await request.json());
+    // METHODIST can only ever create students — the UI already locks the role
+    // selector to STUDENT for them, but this is enforced here too since the
+    // client-sent role can't be trusted on its own.
+    if (session.user.role !== "ADMIN") body.role = "STUDENT";
     const user = await createUser(body, session.user.id);
     return NextResponse.json({ user }, { status: 201 });
   } catch (error) {

@@ -435,6 +435,18 @@
       "namedRegex": "^/teacher/results(?:/)?$"
     },
     {
+      "page": "/teacher/students",
+      "regex": "^/teacher/students(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/teacher/students(?:/)?$"
+    },
+    {
+      "page": "/teacher/students/import",
+      "regex": "^/teacher/students/import(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/teacher/students/import(?:/)?$"
+    },
+    {
       "page": "/teacher/tests",
       "regex": "^/teacher/tests(?:/)?$",
       "routeKeys": {},

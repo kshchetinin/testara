@@ -1,162 +1,172 @@
 {
   "node": {
-    "006de5f99431a30f8c6715beed6acc7a6c4e273d02": {
+    "00660121682a4e3bc11e4838c93a5a5ee46f1be732": {
       "workers": {
         "app/admin/assignments/[id]/page": {
-          "moduleId": 80376,
+          "moduleId": 54785,
           "async": true,
           "codeHash": null
         },
         "app/admin/assignments/page": {
-          "moduleId": 76522,
+          "moduleId": 75993,
           "async": true,
           "codeHash": null
         },
         "app/admin/audit/page": {
-          "moduleId": 54071,
+          "moduleId": 36275,
           "async": true,
           "codeHash": null
         },
         "app/admin/groups/[id]/page": {
-          "moduleId": 27682,
+          "moduleId": 11215,
           "async": true,
           "codeHash": null
         },
         "app/admin/groups/page": {
-          "moduleId": 99514,
+          "moduleId": 65033,
           "async": true,
           "codeHash": null
         },
         "app/admin/page": {
-          "moduleId": 4374,
+          "moduleId": 69378,
           "async": true,
           "codeHash": null
         },
         "app/admin/results/attempt/[attemptId]/page": {
-          "moduleId": 95437,
+          "moduleId": 75057,
           "async": true,
           "codeHash": null
         },
         "app/admin/results/page": {
-          "moduleId": 59589,
+          "moduleId": 88356,
           "async": true,
           "codeHash": null
         },
         "app/admin/tests/[id]/page": {
-          "moduleId": 87692,
+          "moduleId": 60827,
           "async": true,
           "codeHash": null
         },
         "app/admin/tests/[id]/versions/[versionId]/edit/page": {
-          "moduleId": 6154,
+          "moduleId": 89057,
           "async": true,
           "codeHash": null
         },
         "app/admin/tests/import/page": {
-          "moduleId": 6044,
+          "moduleId": 63687,
           "async": true,
           "codeHash": null
         },
         "app/admin/tests/page": {
-          "moduleId": 39105,
+          "moduleId": 89635,
           "async": true,
           "codeHash": null
         },
         "app/admin/users/[id]/page": {
-          "moduleId": 53584,
+          "moduleId": 95430,
           "async": true,
           "codeHash": null
         },
         "app/admin/users/import/page": {
-          "moduleId": 62541,
+          "moduleId": 30374,
           "async": true,
           "codeHash": null
         },
         "app/admin/users/page": {
-          "moduleId": 73038,
+          "moduleId": 74655,
           "async": true,
           "codeHash": null
         },
         "app/student/attempt/[attemptId]/page": {
-          "moduleId": 6515,
+          "moduleId": 93038,
           "async": true,
           "codeHash": null
         },
         "app/student/page": {
-          "moduleId": 89572,
+          "moduleId": 43487,
           "async": true,
           "codeHash": null
         },
         "app/student/result/[attemptId]/page": {
-          "moduleId": 85557,
+          "moduleId": 70500,
           "async": true,
           "codeHash": null
         },
         "app/student/test/[assignmentId]/page": {
-          "moduleId": 10956,
+          "moduleId": 69604,
           "async": true,
           "codeHash": null
         },
         "app/teacher/assignments/[id]/page": {
-          "moduleId": 29516,
+          "moduleId": 9944,
           "async": true,
           "codeHash": null
         },
         "app/teacher/assignments/page": {
-          "moduleId": 94271,
+          "moduleId": 69771,
           "async": true,
           "codeHash": null
         },
         "app/teacher/groups/[id]/page": {
-          "moduleId": 2587,
+          "moduleId": 37908,
           "async": true,
           "codeHash": null
         },
         "app/teacher/groups/page": {
-          "moduleId": 83070,
+          "moduleId": 67806,
           "async": true,
           "codeHash": null
         },
         "app/teacher/page": {
-          "moduleId": 357,
+          "moduleId": 78481,
           "async": true,
           "codeHash": null
         },
         "app/teacher/results/attempt/[attemptId]/page": {
-          "moduleId": 12017,
+          "moduleId": 26769,
           "async": true,
           "codeHash": null
         },
         "app/teacher/results/page": {
-          "moduleId": 76002,
+          "moduleId": 657,
+          "async": true,
+          "codeHash": null
+        },
+        "app/teacher/students/import/page": {
+          "moduleId": 50467,
+          "async": true,
+          "codeHash": null
+        },
+        "app/teacher/students/page": {
+          "moduleId": 30034,
           "async": true,
           "codeHash": null
         },
         "app/teacher/tests/[id]/page": {
-          "moduleId": 94518,
+          "moduleId": 1539,
           "async": true,
           "codeHash": null
         },
         "app/teacher/tests/[id]/versions/[versionId]/edit/page": {
-          "moduleId": 77581,
+          "moduleId": 83763,
           "async": true,
           "codeHash": null
         },
         "app/teacher/tests/import/page": {
-          "moduleId": 67980,
+          "moduleId": 69166,
           "async": true,
           "codeHash": null
         },
         "app/teacher/tests/page": {
-          "moduleId": 70892,
+          "moduleId": 60419,
           "async": true,
           "codeHash": null
         }
       },
-      "filename": "src/components/shared/logout-button.tsx",
-      "exportedName": "$$RSC_SERVER_ACTION_0"
+      "filename": "src/lib/actions/sign-out.ts",
+      "exportedName": "signOutAction"
     },
-    "60a88dfda4ee51fbdfe8af3efe95debe90b8c86cb9": {
+    "6008ef366b3fe3689c7a791c8ce663a210f3f3b784": {
       "workers": {
         "app/login/page": {
           "moduleId": 40246,
@@ -169,5 +179,5 @@
     }
   },
   "edge": {},
-  "encryptionKey": "4+d1iaOMIYXt6pzh3nRlSsdXCJNsP1E0GOQOuhungxU="
+  "encryptionKey": "B6p653zHM8tMIesaxAdyPqWfo4TDsTMwykjxTJTuQBk="
 }

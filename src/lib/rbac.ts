@@ -2,6 +2,7 @@ import type { Role } from "@/generated/prisma/enums";
 
 export const STAFF_ROLES: Role[] = ["ADMIN", "METHODIST", "TEACHER"];
 export const TEST_MANAGER_ROLES: Role[] = ["ADMIN", "METHODIST"];
+export const STUDENT_MANAGER_ROLES: Role[] = ["ADMIN", "METHODIST"];
 
 export function canManageTests(role: Role): boolean {
   return TEST_MANAGER_ROLES.includes(role);
@@ -9,6 +10,10 @@ export function canManageTests(role: Role): boolean {
 
 export function canManageUsers(role: Role): boolean {
   return role === "ADMIN";
+}
+
+export function canManageStudents(role: Role): boolean {
+  return STUDENT_MANAGER_ROLES.includes(role);
 }
 
 export function roleLabel(role: Role): string {

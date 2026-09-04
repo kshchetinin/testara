@@ -21,7 +21,7 @@ const schema = z.object({
 
 export async function POST(request: Request) {
   try {
-    const session = await requireApiRole(["ADMIN"]);
+    const session = await requireApiRole(["ADMIN", "METHODIST"]);
     const body = schema.parse(await request.json());
     const report = await commitStudentImport(body.rows, session.user.id);
     return NextResponse.json(report);

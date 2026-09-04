@@ -117,4 +117,46 @@ describe("student import pipeline (parse -> validate -> commit)", () => {
     const updated = await prisma.user.findUniqueOrThrow({ where: { id: existing.id } });
     expect(updated.middleName).toBe("Обновлённый");
   });
+
+  it("refuses to update (and flags at validation time) a login that belongs to a non-student account", async () => {
+    const admin = await prisma.user.findFirstOrThrow({ where: { role: "ADMIN" } });
+
+    const validation = await validateStudentImport([
+      {
+        rowIndex: 0,
+        fullName: "Захват Аккаунта",
+        lastName: "Захват",
+        firstName: "Аккаунта",
+        middleName: null,
+        login: admin.login,
+        password: null,
+        groupName: null,
+      },
+    ]);
+    expect(validation[0].existingUserId).toBeNull();
+    expect(validation[0].issues.some((i) => i.level === "error" && i.message.includes("другой роли"))).toBe(true);
+
+    const beforeName = (await prisma.user.findUniqueOrThrow({ where: { id: admin.id } })).firstName;
+    const report = await commitStudentImport(
+      [
+        {
+          rowIndex: 0,
+          fullName: "Захват Аккаунта",
+          lastName: "Захват",
+          firstName: "Аккаунта",
+          middleName: null,
+          login: admin.login,
+          password: "hacked123",
+          groupName: null,
+          action: "update",
+        },
+      ],
+      admin.id
+    );
+
+    expect(report.updated).toBe(0);
+    expect(report.failed).toHaveLength(1);
+    const afterName = (await prisma.user.findUniqueOrThrow({ where: { id: admin.id } })).firstName;
+    expect(afterName).toBe(beforeName);
+  });
 });
