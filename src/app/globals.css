@@ -1,26 +1,32 @@
 @import "tailwindcss";
 
+/* Optimal group brand palette (BRAND GUIDE v1.0, 2025) — Optimal Blue / Optimal
+ * Teal / Light Teal / Light Blue / Gray / Dark. Semantic status colors
+ * (destructive/success/warning) are left as conventional red/green/amber —
+ * those carry meaning (error/correct/pending), not brand identity. */
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
+  --background: #f4f8ff; /* Light Blue */
+  --foreground: #101828; /* Dark */
   --card: #ffffff;
-  --card-foreground: #0f172a;
-  --border: #e2e8f0;
-  --input: #e2e8f0;
-  --muted: #f1f5f9;
-  --muted-foreground: #64748b;
-  --primary: #2563eb;
+  --card-foreground: #101828;
+  --border: #dce6f7;
+  --input: #dce6f7;
+  --muted: #eaf1fc;
+  --muted-foreground: #667085; /* Gray */
+  --primary: #0e5bbf; /* Optimal Blue */
   --primary-foreground: #ffffff;
-  --primary-hover: #1d4ed8;
-  --secondary: #f1f5f9;
-  --secondary-foreground: #0f172a;
+  --primary-hover: #0b4a98;
+  --secondary: #eaf1fc;
+  --secondary-foreground: #101828;
+  --accent: #00b3c7; /* Optimal Teal */
+  --accent-foreground: #ffffff;
   --destructive: #dc2626;
   --destructive-foreground: #ffffff;
   --success: #16a34a;
   --success-foreground: #ffffff;
   --warning: #d97706;
   --warning-foreground: #ffffff;
-  --ring: #2563eb;
+  --ring: #0e5bbf;
   --radius: 0.625rem;
 }
 
@@ -37,6 +43,8 @@
   --color-primary-foreground: var(--primary-foreground);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-success: var(--success);

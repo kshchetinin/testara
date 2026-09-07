@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Logo } from "@/components/shared/logo";
+import { Wordmark } from "@/components/shared/wordmark";
 import { loginAction, type LoginState } from "./actions";
 
 const initialState: LoginState = { error: null };
@@ -13,12 +14,24 @@ export function LoginForm({ callbackUrl }: { callbackUrl?: string }) {
   const [state, formAction, isPending] = useActionState(loginAction, initialState);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="w-full max-w-sm">
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-4">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full opacity-20 blur-3xl"
+        style={{ background: "var(--primary)" }}
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -bottom-24 -right-24 h-72 w-72 rounded-full opacity-20 blur-3xl"
+        style={{ background: "var(--accent)" }}
+      />
+      <div className="relative w-full max-w-sm">
         <div className="mb-8 flex flex-col items-center gap-3 text-center">
           <Logo size="lg" />
           <div>
-            <h1 className="text-xl font-semibold text-foreground">TESTARA</h1>
+            <h1 className="text-xl font-semibold">
+              <Wordmark />
+            </h1>
             <p className="text-sm text-muted-foreground">Платформа оценки знаний</p>
           </div>
         </div>

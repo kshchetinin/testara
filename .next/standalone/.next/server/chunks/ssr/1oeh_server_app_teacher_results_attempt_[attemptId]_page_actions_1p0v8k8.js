@@ -1,3 +1,3 @@
-module.exports=[78710,a=>a.a(async(b,c)=>{try{var d=a.i(60627),e=b([d]);[d]=e.then?(await e)():e,a.s([]),c()}catch(a){c(a)}},!1),26769,a=>a.a(async(b,c)=>{try{var d=a.i(78710),e=a.i(60627),f=b([d,e]);[d,e]=f.then?(await f)():f,a.s(["00660121682a4e3bc11e4838c93a5a5ee46f1be732",()=>e.signOutAction]),c()}catch(a){c(a)}},!1)];
+module.exports=[78710,a=>a.a(async(b,c)=>{try{var d=a.i(60627),e=b([d]);[d]=e.then?(await e)():e,a.s([]),c()}catch(a){c(a)}},!1),26769,a=>a.a(async(b,c)=>{try{var d=a.i(78710),e=a.i(60627),f=b([d,e]);[d,e]=f.then?(await f)():f,a.s(["00b205b929f544b94de90f36054f3afc8d6090e852",()=>e.signOutAction]),c()}catch(a){c(a)}},!1)];
 
 //# sourceMappingURL=1oeh_server_app_teacher_results_attempt_%5BattemptId%5D_page_actions_1p0v8k8.js.map

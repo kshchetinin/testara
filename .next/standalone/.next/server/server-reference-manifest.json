@@ -1,6 +1,6 @@
 {
   "node": {
-    "00660121682a4e3bc11e4838c93a5a5ee46f1be732": {
+    "00b205b929f544b94de90f36054f3afc8d6090e852": {
       "workers": {
         "app/admin/assignments/[id]/page": {
           "moduleId": 54785,
@@ -166,7 +166,7 @@
       "filename": "src/lib/actions/sign-out.ts",
       "exportedName": "signOutAction"
     },
-    "6008ef366b3fe3689c7a791c8ce663a210f3f3b784": {
+    "60f29d62f8699be102376677957dfb195f5b0834e4": {
       "workers": {
         "app/login/page": {
           "moduleId": 40246,
@@ -179,5 +179,5 @@
     }
   },
   "edge": {},
-  "encryptionKey": "B6p653zHM8tMIesaxAdyPqWfo4TDsTMwykjxTJTuQBk="
+  "encryptionKey": "/mMHnvjCiborsJzduR+DiYNPiFAxtna3Vq9NT0tDBwU="
 }

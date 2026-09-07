@@ -2,6 +2,7 @@ import { SidebarNav } from "./sidebar-nav";
 import type { WorkspaceVariant } from "./nav-config";
 import { LogoutButton } from "./logout-button";
 import { Logo } from "./logo";
+import { Wordmark } from "./wordmark";
 import { MobileNav } from "./mobile-nav";
 import type { Role } from "@/generated/prisma/enums";
 
@@ -26,7 +27,9 @@ export function AppShell({
         <div className="flex items-center gap-2 border-b border-border px-5 py-4">
           <Logo />
           <div>
-            <p className="text-sm font-semibold leading-tight">TESTARA</p>
+            <p className="text-sm font-semibold leading-tight">
+              <Wordmark />
+            </p>
             <p className="text-xs text-muted-foreground leading-tight">{workspaceLabel}</p>
           </div>
         </div>

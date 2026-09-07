@@ -7,6 +7,7 @@ import { SidebarNav } from "./sidebar-nav";
 import type { WorkspaceVariant } from "./nav-config";
 import { LogoutButton } from "./logout-button";
 import { Logo } from "./logo";
+import { Wordmark } from "./wordmark";
 import type { Role } from "@/generated/prisma/enums";
 
 // Mirrors the Dialog component's client-detection pattern: createPortal needs
@@ -55,7 +56,9 @@ export function MobileNav({
           <Menu className="h-5 w-5" />
         </button>
         <Logo />
-        <p className="text-sm font-semibold">TESTARA</p>
+        <p className="text-sm font-semibold">
+          <Wordmark />
+        </p>
       </header>
 
       {mounted && open
@@ -67,7 +70,9 @@ export function MobileNav({
                   <div className="flex items-center gap-2">
                     <Logo />
                     <div>
-                      <p className="text-sm font-semibold leading-tight">TESTARA</p>
+                      <p className="text-sm font-semibold leading-tight">
+                        <Wordmark />
+                      </p>
                       <p className="text-xs text-muted-foreground leading-tight">{workspaceLabel}</p>
                     </div>
                   </div>
