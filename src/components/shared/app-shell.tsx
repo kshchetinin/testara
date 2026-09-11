@@ -47,9 +47,9 @@ export function AppShell({
         </div>
       </aside>
 
-      <div className="flex min-h-screen w-full flex-col md:pl-64">
+      <div className="flex min-h-screen w-full flex-col md:pl-64 print:pl-0">
         <MobileNav workspaceLabel={workspaceLabel} userName={userName} userSubtitle={userSubtitle} variant={variant} role={role} />
-        <main className="flex-1 p-4 md:p-8">{children}</main>
+        <main className="flex-1 p-4 md:p-8 print:p-0">{children}</main>
       </div>
     </div>
   );

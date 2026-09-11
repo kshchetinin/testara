@@ -72,4 +72,21 @@ body {
   body {
     background: #ffffff;
   }
+  @page {
+    margin: 1.2cm;
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+  thead {
+    display: table-header-group;
+  }
+  tr {
+    break-inside: avoid;
+  }
+  .print-card {
+    box-shadow: none !important;
+    border: none !important;
+  }
 }
