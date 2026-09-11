@@ -12,12 +12,15 @@ import {
 
 describe("tests service — full version lifecycle", () => {
   let adminId: string;
+  let subjectId: string;
   let testId: string;
   let versionId: string;
 
   beforeAll(async () => {
     const admin = await prisma.user.findFirstOrThrow({ where: { role: "ADMIN" } });
     adminId = admin.id;
+    const subject = await prisma.subject.upsert({ where: { name: "Онкология" }, update: {}, create: { name: "Онкология" } });
+    subjectId = subject.id;
   });
 
   afterAll(async () => {
@@ -37,7 +40,7 @@ describe("tests service — full version lifecycle", () => {
 
   it("creates a test with an initial draft version", async () => {
     const { test, version } = await createTest(
-      { title: "IT: Тест жизненного цикла", subject: "Онкология", topic: "Интеграционный тест" },
+      { title: "IT: Тест жизненного цикла", subjectId, topic: "Интеграционный тест" },
       adminId
     );
     testId = test.id;

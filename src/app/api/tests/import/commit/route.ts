@@ -2,11 +2,12 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { requireApiRole, apiErrorResponse } from "@/lib/api-auth";
 import { createTestFromImport } from "@/server/services/testsService";
+import { getUserSubjectIds } from "@/server/services/subjectsService";
 
 const schema = z.object({
   title: z.string().trim().min(1, "Укажите название теста"),
   description: z.string().trim().optional(),
-  subject: z.string().trim().min(1, "Укажите дисциплину"),
+  subjectId: z.string().uuid("Укажите дисциплину"),
   topic: z.string().trim().optional(),
   questions: z
     .array(
@@ -24,6 +25,12 @@ export async function POST(request: Request) {
   try {
     const session = await requireApiRole(["ADMIN", "METHODIST"]);
     const body = schema.parse(await request.json());
+    if (session.user.role !== "ADMIN") {
+      const allowed = await getUserSubjectIds(session.user.id);
+      if (!allowed.includes(body.subjectId)) {
+        return NextResponse.json({ error: "Этот предмет вам не назначен" }, { status: 403 });
+      }
+    }
     const result = await createTestFromImport(body, body.questions, session.user.id);
     return NextResponse.json(result, { status: 201 });
   } catch (error) {

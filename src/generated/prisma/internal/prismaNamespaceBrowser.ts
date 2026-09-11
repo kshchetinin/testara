@@ -53,6 +53,7 @@ export const AnyNull = runtime.AnyNull
 export const ModelName = {
   User: 'User',
   Group: 'Group',
+  Subject: 'Subject',
   Test: 'Test',
   TestVersion: 'TestVersion',
   Question: 'Question',
@@ -109,11 +110,21 @@ export const GroupScalarFieldEnum = {
 export type GroupScalarFieldEnum = (typeof GroupScalarFieldEnum)[keyof typeof GroupScalarFieldEnum]
 
 
+export const SubjectScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  status: 'status',
+  createdAt: 'createdAt'
+} as const
+
+export type SubjectScalarFieldEnum = (typeof SubjectScalarFieldEnum)[keyof typeof SubjectScalarFieldEnum]
+
+
 export const TestScalarFieldEnum = {
   id: 'id',
   title: 'title',
   description: 'description',
-  subject: 'subject',
+  subjectId: 'subjectId',
   topic: 'topic',
   authorId: 'authorId',
   status: 'status',

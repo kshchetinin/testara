@@ -25,6 +25,11 @@ enum GroupStatus {
   ARCHIVED
 }
 
+enum SubjectStatus {
+  ACTIVE
+  ARCHIVED
+}
+
 enum TestContainerStatus {
   ACTIVE
   ARCHIVED
@@ -84,6 +89,10 @@ model User {
   attempts           Attempt[]
   auditLogs          AuditLog[]
 
+  // Which subjects a TEACHER/METHODIST teaches — governs which tests/assignments/results
+  // they can see and manage. Unused for ADMIN (sees everything) and STUDENT.
+  subjects Subject[] @relation("UserSubjects")
+
   @@index([groupId])
   @@index([role])
 }
@@ -98,11 +107,24 @@ model Group {
   assignmentGroups AssignmentGroup[]
 }
 
+model Subject {
+  id        String        @id @default(uuid())
+  name      String        @unique
+  status    SubjectStatus @default(ACTIVE)
+  createdAt DateTime      @default(now())
+
+  teachers User[] @relation("UserSubjects")
+  tests    Test[]
+
+  @@index([status])
+}
+
 model Test {
   id          String               @id @default(uuid())
   title       String
   description String?
-  subject     String
+  subjectId   String
+  subject     Subject              @relation(fields: [subjectId], references: [id])
   topic       String?
   authorId    String
   author      User                 @relation("TestAuthor", fields: [authorId], references: [id])
@@ -113,6 +135,7 @@ model Test {
   versions TestVersion[]
 
   @@index([authorId])
+  @@index([subjectId])
 }
 
 model TestVersion {

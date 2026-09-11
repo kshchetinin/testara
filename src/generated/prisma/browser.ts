@@ -28,6 +28,11 @@ export type User = Prisma.UserModel
  */
 export type Group = Prisma.GroupModel
 /**
+ * Model Subject
+ * 
+ */
+export type Subject = Prisma.SubjectModel
+/**
  * Model Test
  * 
  */

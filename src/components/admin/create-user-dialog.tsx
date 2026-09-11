@@ -15,6 +15,11 @@ interface GroupOption {
   name: string;
 }
 
+interface SubjectOption {
+  id: string;
+  name: string;
+}
+
 function randomPassword() {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789";
   return Array.from({ length: 10 }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
@@ -28,18 +33,36 @@ const initialForm = {
   password: "",
   role: "STUDENT",
   groupId: "",
+  subjectIds: [] as string[],
 };
 
-export function CreateUserDialog({ groups, studentOnly = false }: { groups: GroupOption[]; studentOnly?: boolean }) {
+export function CreateUserDialog({
+  groups,
+  subjects = [],
+  studentOnly = false,
+}: {
+  groups: GroupOption[];
+  subjects?: SubjectOption[];
+  studentOnly?: boolean;
+}) {
   const router = useRouter();
   const { toast } = useToast();
   const [open, setOpen] = React.useState(false);
   const [form, setForm] = React.useState(initialForm);
   const [submitting, setSubmitting] = React.useState(false);
 
-  function set<K extends keyof typeof initialForm>(key: K, value: string) {
+  function set<K extends keyof typeof initialForm>(key: K, value: (typeof initialForm)[K]) {
     setForm((prev) => ({ ...prev, [key]: value }));
   }
+
+  function toggleSubject(id: string) {
+    setForm((prev) => ({
+      ...prev,
+      subjectIds: prev.subjectIds.includes(id) ? prev.subjectIds.filter((s) => s !== id) : [...prev.subjectIds, id],
+    }));
+  }
+
+  const isSubjectScoped = form.role === "TEACHER" || form.role === "METHODIST";
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -56,6 +79,7 @@ export function CreateUserDialog({ groups, studentOnly = false }: { groups: Grou
           middleName: form.middleName || undefined,
           role: form.role,
           groupId: form.role === "STUDENT" && form.groupId ? form.groupId : undefined,
+          subjectIds: isSubjectScoped ? form.subjectIds : undefined,
         }),
       });
       const data = await res.json();
@@ -137,6 +161,30 @@ export function CreateUserDialog({ groups, studentOnly = false }: { groups: Grou
             </div>
           )}
 
+          {!studentOnly && isSubjectScoped && (
+            <div className="flex flex-col gap-1.5">
+              <Label>Предметы</Label>
+              {subjects.length === 0 ? (
+                <p className="text-xs text-muted-foreground">Сначала создайте предмет в разделе «Предметы».</p>
+              ) : (
+                <div className="flex flex-wrap gap-2">
+                  {subjects.map((s) => (
+                    <button
+                      key={s.id}
+                      type="button"
+                      onClick={() => toggleSubject(s.id)}
+                      className={`rounded-full border px-3 py-1 text-xs ${
+                        form.subjectIds.includes(s.id) ? "border-primary bg-primary text-primary-foreground" : "border-border text-muted-foreground"
+                      }`}
+                    >
+                      {s.name}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
           <div className="flex flex-col gap-1.5">
             <Label>Логин</Label>
             <Input value={form.login} onChange={(e) => set("login", e.target.value)} required placeholder="latinname1" />
@@ -156,7 +204,7 @@ export function CreateUserDialog({ groups, studentOnly = false }: { groups: Grou
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>
               Отмена
             </Button>
-            <Button type="submit" disabled={submitting}>
+            <Button type="submit" disabled={submitting || (!studentOnly && isSubjectScoped && form.subjectIds.length === 0)}>
               Создать
             </Button>
           </DialogFooter>

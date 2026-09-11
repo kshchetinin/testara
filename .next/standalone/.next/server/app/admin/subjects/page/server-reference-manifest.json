@@ -1,0 +1,16 @@
+{
+  "node": {
+    "00b205b929f544b94de90f36054f3afc8d6090e852": {
+      "workers": {
+        "app/admin/subjects/page": {
+          "moduleId": 26387,
+          "async": true,
+          "codeHash": null
+        }
+      },
+      "exportedName": "signOutAction",
+      "filename": "src/lib/actions/sign-out.ts"
+    }
+  },
+  "edge": {}
+}

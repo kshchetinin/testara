@@ -36,6 +36,14 @@ export const GroupStatus = {
 export type GroupStatus = (typeof GroupStatus)[keyof typeof GroupStatus]
 
 
+export const SubjectStatus = {
+  ACTIVE: 'ACTIVE',
+  ARCHIVED: 'ARCHIVED'
+} as const
+
+export type SubjectStatus = (typeof SubjectStatus)[keyof typeof SubjectStatus]
+
+
 export const TestContainerStatus = {
   ACTIVE: 'ACTIVE',
   ARCHIVED: 'ARCHIVED'

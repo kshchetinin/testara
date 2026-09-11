@@ -1,7 +1,7 @@
 var R=require("../../../chunks/ssr/[turbopack]_runtime.js")("server/app/teacher/assignments/page.js")
-R.c("server/chunks/ssr/[root-of-the-server]__0vqo69p._.js")
+R.c("server/chunks/ssr/[root-of-the-server]__0bkij8l._.js")
 R.c("server/chunks/ssr/node_modules_next_dist_1n3w9lb._.js")
-R.c("server/chunks/ssr/_1x22xuf._.js")
+R.c("server/chunks/ssr/_1hdhnuj._.js")
 R.c("server/chunks/ssr/[root-of-the-server]__1odafg9._.js")
 R.c("server/chunks/ssr/[root-of-the-server]__17v-f6m._.js")
 R.c("server/chunks/ssr/[root-of-the-server]__1m4_p4w._.js")
@@ -16,5 +16,5 @@ R.c("server/chunks/ssr/node_modules_next_dist_0drixxt._.js")
 R.c("server/chunks/ssr/_1h_ct26._.js")
 R.c("server/chunks/ssr/src_lib_utils_ts_0m4hn6s._.js")
 R.c("server/chunks/ssr/_next-internal_server_app_teacher_assignments_page_actions_13ctlub.js")
-R.m(22708)
-module.exports=R.m(22708).exports
+R.m(80629)
+module.exports=R.m(80629).exports

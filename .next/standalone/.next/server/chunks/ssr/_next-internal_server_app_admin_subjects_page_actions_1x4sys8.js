@@ -1,0 +1,3 @@
+module.exports=[75330,a=>a.a(async(b,c)=>{try{var d=a.i(60627),e=b([d]);[d]=e.then?(await e)():e,a.s([]),c()}catch(a){c(a)}},!1),26387,a=>a.a(async(b,c)=>{try{var d=a.i(75330),e=a.i(60627),f=b([d,e]);[d,e]=f.then?(await f)():f,a.s(["00b205b929f544b94de90f36054f3afc8d6090e852",()=>e.signOutAction]),c()}catch(a){c(a)}},!1)];
+
+//# sourceMappingURL=_next-internal_server_app_admin_subjects_page_actions_1x4sys8.js.map

@@ -9,7 +9,11 @@ import { listGroups } from "@/server/services/groupsService";
 import { listTests } from "@/server/services/testsService";
 
 export async function ResultsListView({ basePath, filters }: { basePath: string; filters: ResultsFilters }) {
-  const [results, groups, tests] = await Promise.all([listResults(filters), listGroups(), listTests()]);
+  const [results, groups, tests] = await Promise.all([
+    listResults(filters),
+    listGroups(),
+    listTests({ subjectIds: filters.subjectIds }),
+  ]);
 
   return (
     <div>

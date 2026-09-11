@@ -6,6 +6,7 @@ export interface AssignmentFilters {
   status?: "ACTIVE" | "CLOSED";
   groupId?: string;
   topic?: string;
+  subjectIds?: string[];
 }
 
 export async function listAssignments(filters: AssignmentFilters = {}) {
@@ -15,6 +16,7 @@ export async function listAssignments(filters: AssignmentFilters = {}) {
       ...(filters.status ? { status: filters.status } : {}),
       ...(filters.groupId ? { groups: { some: { groupId: filters.groupId } } } : {}),
       ...(filters.topic ? { testVersion: { test: { topic: filters.topic } } } : {}),
+      ...(filters.subjectIds ? { testVersion: { test: { subjectId: { in: filters.subjectIds } } } } : {}),
     },
     orderBy: { createdAt: "desc" },
     include: {
@@ -45,9 +47,13 @@ export async function getAssignmentDetail(id: string) {
   });
 }
 
-export async function listPublishableTests() {
+export async function listPublishableTests(subjectIds?: string[]) {
   return prisma.test.findMany({
-    where: { status: "ACTIVE", versions: { some: { status: "PUBLISHED" } } },
+    where: {
+      status: "ACTIVE",
+      versions: { some: { status: "PUBLISHED" } },
+      ...(subjectIds ? { subjectId: { in: subjectIds } } : {}),
+    },
     include: {
       versions: {
         where: { status: "PUBLISHED" },
@@ -89,12 +95,19 @@ export class InvalidQuestionCountError extends Error {
   }
 }
 
-export async function createAssignment(input: CreateAssignmentInput, actorId: string) {
+export class SubjectNotAllowedError extends Error {
+  constructor() {
+    super("Этот предмет вам не назначен");
+  }
+}
+
+export async function createAssignment(input: CreateAssignmentInput, actorId: string, allowedSubjectIds?: string[]) {
   const version = await prisma.testVersion.findUnique({
     where: { id: input.testVersionId },
-    include: { _count: { select: { questions: true } } },
+    include: { _count: { select: { questions: true } }, test: { select: { subjectId: true } } },
   });
   if (!version || version.status !== "PUBLISHED") throw new TestVersionNotPublishedError();
+  if (allowedSubjectIds && !allowedSubjectIds.includes(version.test.subjectId)) throw new SubjectNotAllowedError();
 
   const groupIds = input.groupIds ?? [];
   const studentIds = input.studentIds ?? [];
@@ -145,6 +158,40 @@ export async function setAssignmentStatus(id: string, status: "ACTIVE" | "CLOSED
   return prisma.$transaction(async (tx) => {
     const assignment = await tx.testAssignment.update({ where: { id }, data: { status } });
     await logAudit({ userId: actorId, action: "ASSIGNMENT_UPDATE", entityType: "TestAssignment", entityId: id, metadata: { status } }, tx);
+    return assignment;
+  });
+}
+
+export class ForbiddenAssignmentDeleteError extends Error {
+  constructor() {
+    super("Вы можете удалить только назначение, которое создали сами");
+  }
+}
+
+export class AssignmentHasAttemptsError extends Error {
+  constructor() {
+    super("Нельзя удалить назначение — по нему уже есть попытки прохождения. Закройте назначение вместо удаления.");
+  }
+}
+
+// A TEACHER/METHODIST may only remove an assignment they created themselves, and only
+// before any student has started it — this exists to let them undo a mistaken
+// assignment, not to erase real attempt history. ADMIN may delete any assignment
+// under the same no-attempts guard.
+export async function deleteAssignment(id: string, actorId: string, isAdmin: boolean) {
+  const assignment = await prisma.testAssignment.findUnique({
+    where: { id },
+    include: { _count: { select: { attempts: true } } },
+  });
+  if (!assignment) return null;
+  if (!isAdmin && assignment.createdById !== actorId) throw new ForbiddenAssignmentDeleteError();
+  if (assignment._count.attempts > 0) throw new AssignmentHasAttemptsError();
+
+  return prisma.$transaction(async (tx) => {
+    await tx.assignmentGroup.deleteMany({ where: { assignmentId: id } });
+    await tx.assignmentStudent.deleteMany({ where: { assignmentId: id } });
+    await tx.testAssignment.delete({ where: { id } });
+    await logAudit({ userId: actorId, action: "ASSIGNMENT_DELETE", entityType: "TestAssignment", entityId: id }, tx);
     return assignment;
   });
 }

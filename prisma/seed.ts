@@ -26,6 +26,12 @@ async function main() {
     },
   });
 
+  const subject = await prisma.subject.upsert({
+    where: { name: "Онкология" },
+    update: {},
+    create: { name: "Онкология", status: "ACTIVE" },
+  });
+
   const methodist = await prisma.user.upsert({
     where: { login: "demo_methodist" },
     update: {},
@@ -37,6 +43,7 @@ async function main() {
       middleName: "Викторовна",
       role: "METHODIST",
       status: "ACTIVE",
+      subjects: { connect: [{ id: subject.id }] },
     },
   });
 
@@ -51,6 +58,7 @@ async function main() {
       middleName: "Петрович",
       role: "TEACHER",
       status: "ACTIVE",
+      subjects: { connect: [{ id: subject.id }] },
     },
   });
 
@@ -101,7 +109,7 @@ async function main() {
       data: {
         title: "Основы онкологии",
         description: "Демонстрационный тест по основным понятиям онкологии для учебных занятий.",
-        subject: "Онкология",
+        subjectId: subject.id,
         topic: "Общие вопросы",
         authorId: methodist.id,
         status: "ACTIVE",

@@ -2,11 +2,13 @@ import { prisma } from "@/lib/prisma";
 import { logAudit } from "./auditService";
 import type { QuestionType, ScoringMode } from "@/generated/prisma/enums";
 
-export async function listTests() {
+export async function listTests(filters: { subjectIds?: string[] } = {}) {
   return prisma.test.findMany({
+    where: filters.subjectIds ? { subjectId: { in: filters.subjectIds } } : {},
     orderBy: { createdAt: "desc" },
     include: {
       author: { select: { firstName: true, lastName: true } },
+      subject: { select: { id: true, name: true } },
       versions: {
         orderBy: { versionNumber: "desc" },
         select: { id: true, versionNumber: true, status: true, publishedAt: true, _count: { select: { questions: true } } },
@@ -20,6 +22,7 @@ export async function getTestWithVersions(testId: string) {
     where: { id: testId },
     include: {
       author: { select: { firstName: true, lastName: true } },
+      subject: { select: { id: true, name: true } },
       versions: {
         orderBy: { versionNumber: "desc" },
         include: { _count: { select: { questions: true, assignments: true } } },
@@ -31,7 +34,7 @@ export async function getTestWithVersions(testId: string) {
 export interface CreateTestInput {
   title: string;
   description?: string;
-  subject: string;
+  subjectId: string;
   topic?: string;
 }
 
@@ -41,7 +44,7 @@ export async function createTest(input: CreateTestInput, actorId: string) {
       data: {
         title: input.title,
         description: input.description || null,
-        subject: input.subject,
+        subjectId: input.subjectId,
         topic: input.topic || null,
         authorId: actorId,
       },
@@ -57,7 +60,7 @@ export async function createTest(input: CreateTestInput, actorId: string) {
 export interface UpdateTestInput {
   title?: string;
   description?: string | null;
-  subject?: string;
+  subjectId?: string;
   topic?: string | null;
   status?: "ACTIVE" | "ARCHIVED";
 }
@@ -178,7 +181,7 @@ export async function createTestFromImport(
       data: {
         title: meta.title,
         description: meta.description || null,
-        subject: meta.subject,
+        subjectId: meta.subjectId,
         topic: meta.topic || null,
         authorId: actorId,
       },

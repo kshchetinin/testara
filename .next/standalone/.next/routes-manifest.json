@@ -120,6 +120,14 @@
       "namedRegex": "^/api/groups/(?<nxtPid>[^/]+?)(?:/)?$"
     },
     {
+      "page": "/api/subjects/[id]",
+      "regex": "^/api/subjects/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/subjects/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
       "page": "/api/tests/[id]",
       "regex": "^/api/tests/([^/]+?)(?:/)?$",
       "routeKeys": {
@@ -303,6 +311,12 @@
       "namedRegex": "^/admin/results(?:/)?$"
     },
     {
+      "page": "/admin/subjects",
+      "regex": "^/admin/subjects(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/subjects(?:/)?$"
+    },
+    {
       "page": "/admin/tests",
       "regex": "^/admin/tests(?:/)?$",
       "routeKeys": {},
@@ -351,6 +365,12 @@
       "namedRegex": "^/api/results/export(?:/)?$"
     },
     {
+      "page": "/api/subjects",
+      "regex": "^/api/subjects(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/subjects(?:/)?$"
+    },
+    {
       "page": "/api/tests",
       "regex": "^/api/tests(?:/)?$",
       "routeKeys": {},
@@ -397,6 +417,12 @@
       "regex": "^/favicon\\.ico(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/favicon\\.ico(?:/)?$"
+    },
+    {
+      "page": "/icon.png",
+      "regex": "^/icon\\.png(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/icon\\.png(?:/)?$"
     },
     {
       "page": "/login",

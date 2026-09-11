@@ -37,7 +37,8 @@ describe("assignments service", () => {
     });
     studentId = student.id;
 
-    const { test, version } = await createTest({ title: "IT: Тест для назначения", subject: "Онкология" }, adminId);
+    const subject = await prisma.subject.upsert({ where: { name: "Онкология" }, update: {}, create: { name: "Онкология" } });
+    const { test, version } = await createTest({ title: "IT: Тест для назначения", subjectId: subject.id }, adminId);
     testId = test.id;
     draftVersionId = version.id;
 

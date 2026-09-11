@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { requireApiRole, apiErrorResponse } from "@/lib/api-auth";
 import { getUserDetail, updateUser, setUserStatus } from "@/server/services/usersService";
+import { prisma } from "@/lib/prisma";
 
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -20,6 +21,7 @@ const patchSchema = z.object({
   lastName: z.string().trim().min(1).optional(),
   middleName: z.string().trim().optional().nullable(),
   groupId: z.string().uuid().optional().nullable(),
+  subjectIds: z.array(z.string().uuid()).optional(),
   status: z.enum(["ACTIVE", "BLOCKED", "ARCHIVED"]).optional(),
 });
 
@@ -28,6 +30,13 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     const session = await requireApiRole(["ADMIN"]);
     const { id } = await params;
     const body = patchSchema.parse(await request.json());
+
+    if (body.subjectIds !== undefined && body.subjectIds.length === 0) {
+      const target = await prisma.user.findUnique({ where: { id }, select: { role: true } });
+      if (target && (target.role === "TEACHER" || target.role === "METHODIST")) {
+        return NextResponse.json({ error: "Укажите хотя бы один предмет" }, { status: 400 });
+      }
+    }
 
     let user = null;
     const { status, ...rest } = body;

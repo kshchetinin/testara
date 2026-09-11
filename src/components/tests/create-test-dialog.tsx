@@ -7,15 +7,33 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Select } from "@/components/ui/select";
 import { Dialog, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/toast";
+
+interface SubjectOption {
+  id: string;
+  name: string;
+}
 
 export function CreateTestDialog({ basePath }: { basePath: string }) {
   const router = useRouter();
   const { toast } = useToast();
   const [open, setOpen] = React.useState(false);
   const [submitting, setSubmitting] = React.useState(false);
-  const [form, setForm] = React.useState({ title: "", subject: "Онкология", topic: "", description: "" });
+  const [subjects, setSubjects] = React.useState<SubjectOption[]>([]);
+  const [form, setForm] = React.useState({ title: "", subjectId: "", topic: "", description: "" });
+
+  React.useEffect(() => {
+    if (!open) return;
+    fetch("/api/subjects?mine=1")
+      .then((res) => res.json())
+      .then((data) => {
+        setSubjects(data.subjects ?? []);
+        setForm((f) => (f.subjectId ? f : { ...f, subjectId: data.subjects?.[0]?.id ?? "" }));
+      })
+      .catch(() => {});
+  }, [open]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -56,7 +74,17 @@ export function CreateTestDialog({ basePath }: { basePath: string }) {
           <div className="grid grid-cols-2 gap-3">
             <div className="flex flex-col gap-1.5">
               <Label>Дисциплина</Label>
-              <Input value={form.subject} onChange={(e) => setForm((f) => ({ ...f, subject: e.target.value }))} required />
+              {subjects.length === 0 ? (
+                <p className="text-xs text-muted-foreground">Нет доступных предметов</p>
+              ) : (
+                <Select value={form.subjectId} onChange={(e) => setForm((f) => ({ ...f, subjectId: e.target.value }))} required>
+                  {subjects.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.name}
+                    </option>
+                  ))}
+                </Select>
+              )}
             </div>
             <div className="flex flex-col gap-1.5">
               <Label>Тема</Label>
@@ -71,7 +99,7 @@ export function CreateTestDialog({ basePath }: { basePath: string }) {
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>
               Отмена
             </Button>
-            <Button type="submit" disabled={submitting}>
+            <Button type="submit" disabled={submitting || !form.subjectId}>
               Создать и перейти к вопросам
             </Button>
           </DialogFooter>

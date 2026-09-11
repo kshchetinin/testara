@@ -11,7 +11,7 @@ import { listActiveStudents } from "@/server/services/usersService";
 export async function AssignmentsListView({ basePath, filters }: { basePath: string; filters: AssignmentFilters }) {
   const [assignments, tests, groups, students, topics] = await Promise.all([
     listAssignments(filters),
-    listPublishableTests(),
+    listPublishableTests(filters.subjectIds),
     listGroups(),
     listActiveStudents(),
     listAssignmentTopics(),

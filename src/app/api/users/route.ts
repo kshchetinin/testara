@@ -37,6 +37,7 @@ const createSchema = z.object({
   middleName: z.string().trim().optional(),
   role: z.enum(["ADMIN", "METHODIST", "TEACHER", "STUDENT"]),
   groupId: z.string().uuid().optional().nullable(),
+  subjectIds: z.array(z.string().uuid()).optional(),
 });
 
 export async function POST(request: Request) {
@@ -47,6 +48,9 @@ export async function POST(request: Request) {
     // selector to STUDENT for them, but this is enforced here too since the
     // client-sent role can't be trusted on its own.
     if (session.user.role !== "ADMIN") body.role = "STUDENT";
+    if ((body.role === "TEACHER" || body.role === "METHODIST") && !body.subjectIds?.length) {
+      return NextResponse.json({ error: "Укажите хотя бы один предмет" }, { status: 400 });
+    }
     const user = await createUser(body, session.user.id);
     return NextResponse.json({ user }, { status: 201 });
   } catch (error) {

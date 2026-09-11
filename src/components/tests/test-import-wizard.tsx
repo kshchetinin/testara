@@ -14,6 +14,11 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/toast";
 import { buildQuestionRecords, validateQuestionRecord, type TestColumnMapping, type QuestionRecordDraft } from "@/lib/excel/tests";
 
+interface SubjectOption {
+  id: string;
+  name: string;
+}
+
 export function TestImportWizard({ basePath }: { basePath: string }) {
   const router = useRouter();
   const { toast } = useToast();
@@ -21,9 +26,21 @@ export function TestImportWizard({ basePath }: { basePath: string }) {
   const [headers, setHeaders] = React.useState<string[]>([]);
   const [rows, setRows] = React.useState<string[][]>([]);
   const [mapping, setMapping] = React.useState<TestColumnMapping>({ question: null, answers: [], correct: null });
-  const [meta, setMeta] = React.useState({ title: "", subject: "Онкология", topic: "" });
+  const [subjects, setSubjects] = React.useState<SubjectOption[]>([]);
+  const [meta, setMeta] = React.useState({ title: "", subjectId: "", topic: "" });
   const [busy, setBusy] = React.useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+  React.useEffect(() => {
+    fetch("/api/subjects?mine=1")
+      .then((res) => res.json())
+      .then((data: { subjects?: SubjectOption[] }) => {
+        const list = data.subjects ?? [];
+        setSubjects(list);
+        setMeta((m) => (m.subjectId ? m : { ...m, subjectId: list[0]?.id ?? "" }));
+      })
+      .catch(() => {});
+  }, []);
 
   const records: QuestionRecordDraft[] = React.useMemo(() => buildQuestionRecords(rows, mapping), [rows, mapping]);
   const validated = React.useMemo(() => records.map((r) => ({ record: r, issues: validateQuestionRecord(r) })), [records]);
@@ -117,7 +134,17 @@ export function TestImportWizard({ basePath }: { basePath: string }) {
               </div>
               <div className="flex flex-col gap-1.5">
                 <Label>Дисциплина</Label>
-                <Input value={meta.subject} onChange={(e) => setMeta((m) => ({ ...m, subject: e.target.value }))} required />
+                {subjects.length === 0 ? (
+                  <p className="text-xs text-muted-foreground">Нет доступных предметов</p>
+                ) : (
+                  <Select value={meta.subjectId} onChange={(e) => setMeta((m) => ({ ...m, subjectId: e.target.value }))} required>
+                    {subjects.map((s) => (
+                      <option key={s.id} value={s.id}>
+                        {s.name}
+                      </option>
+                    ))}
+                  </Select>
+                )}
               </div>
               <div className="flex flex-col gap-1.5">
                 <Label>Тема</Label>
@@ -179,7 +206,10 @@ export function TestImportWizard({ basePath }: { basePath: string }) {
                 <ArrowLeft className="h-4 w-4" />
                 Назад
               </Button>
-              <Button onClick={() => setStep("review")} disabled={mapping.question === null || mapping.answers.length === 0 || !meta.title}>
+              <Button
+                onClick={() => setStep("review")}
+                disabled={mapping.question === null || mapping.answers.length === 0 || !meta.title || !meta.subjectId}
+              >
                 Проверить данные
                 <ArrowRight className="h-4 w-4" />
               </Button>

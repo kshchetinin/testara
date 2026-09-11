@@ -19,6 +19,11 @@ interface GroupOption {
   name: string;
 }
 
+interface SubjectOption {
+  id: string;
+  name: string;
+}
+
 interface UserData {
   id: string;
   login: string;
@@ -28,6 +33,7 @@ interface UserData {
   role: Role;
   status: UserStatus;
   groupId: string | null;
+  subjectIds: string[];
   createdAt: string | Date;
   lastLoginAt: string | Date | null;
 }
@@ -39,20 +45,26 @@ const STATUS_VARIANT: Record<UserStatus, "success" | "destructive" | "secondary"
   ARCHIVED: "secondary",
 };
 
-export function UserDetailPanel({ user, groups }: { user: UserData; groups: GroupOption[] }) {
+export function UserDetailPanel({ user, groups, subjects = [] }: { user: UserData; groups: GroupOption[]; subjects?: SubjectOption[] }) {
   const router = useRouter();
   const { toast } = useToast();
+  const isSubjectScoped = user.role === "TEACHER" || user.role === "METHODIST";
   const [form, setForm] = React.useState({
     lastName: user.lastName,
     firstName: user.firstName,
     middleName: user.middleName ?? "",
     groupId: user.groupId ?? "",
+    subjectIds: user.subjectIds,
   });
   const [savingProfile, setSavingProfile] = React.useState(false);
   const [statusBusy, setStatusBusy] = React.useState(false);
   const [resetDialogOpen, setResetDialogOpen] = React.useState(false);
   const [generatedPassword, setGeneratedPassword] = React.useState<string | null>(null);
   const [resetting, setResetting] = React.useState(false);
+
+  function toggleSubject(id: string) {
+    setForm((f) => ({ ...f, subjectIds: f.subjectIds.includes(id) ? f.subjectIds.filter((s) => s !== id) : [...f.subjectIds, id] }));
+  }
 
   async function saveProfile(e: React.FormEvent) {
     e.preventDefault();
@@ -66,6 +78,7 @@ export function UserDetailPanel({ user, groups }: { user: UserData; groups: Grou
           firstName: form.firstName,
           middleName: form.middleName || null,
           ...(user.role === "STUDENT" ? { groupId: form.groupId || null } : {}),
+          ...(isSubjectScoped ? { subjectIds: form.subjectIds } : {}),
         }),
       });
       const data = await res.json();
@@ -157,8 +170,31 @@ export function UserDetailPanel({ user, groups }: { user: UserData; groups: Grou
                 </Select>
               </div>
             )}
+            {isSubjectScoped && (
+              <div className="flex flex-col gap-1.5">
+                <Label>Предметы</Label>
+                {subjects.length === 0 ? (
+                  <p className="text-xs text-muted-foreground">Сначала создайте предмет в разделе «Предметы».</p>
+                ) : (
+                  <div className="flex flex-wrap gap-2">
+                    {subjects.map((s) => (
+                      <button
+                        key={s.id}
+                        type="button"
+                        onClick={() => toggleSubject(s.id)}
+                        className={`rounded-full border px-3 py-1 text-xs ${
+                          form.subjectIds.includes(s.id) ? "border-primary bg-primary text-primary-foreground" : "border-border text-muted-foreground"
+                        }`}
+                      >
+                        {s.name}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
             <div>
-              <Button type="submit" disabled={savingProfile}>
+              <Button type="submit" disabled={savingProfile || (isSubjectScoped && form.subjectIds.length === 0)}>
                 Сохранить
               </Button>
             </div>

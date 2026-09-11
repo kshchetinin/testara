@@ -2,5 +2,5 @@ import { AssignmentDetailView } from "@/components/assignments/assignment-detail
 
 export default async function TeacherAssignmentDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  return <AssignmentDetailView assignmentId={id} />;
+  return <AssignmentDetailView assignmentId={id} basePath="/teacher/assignments" />;
 }

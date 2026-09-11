@@ -8,6 +8,7 @@ export interface ResultsFilters {
   studentSearch?: string;
   dateFrom?: string;
   dateTo?: string;
+  subjectIds?: string[];
 }
 
 export async function listResults(filters: ResultsFilters) {
@@ -16,6 +17,7 @@ export async function listResults(filters: ResultsFilters) {
     ...(filters.groupId ? { student: { groupId: filters.groupId } } : {}),
     ...(filters.testId ? { assignment: { testVersion: { testId: filters.testId } } } : {}),
     ...(filters.versionId ? { assignment: { testVersionId: filters.versionId } } : {}),
+    ...(filters.subjectIds ? { assignment: { testVersion: { test: { subjectId: { in: filters.subjectIds } } } } } : {}),
     ...(filters.studentSearch
       ? {
           student: {

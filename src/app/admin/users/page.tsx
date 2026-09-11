@@ -9,6 +9,7 @@ import { UsersFilterBar } from "@/components/admin/users-filter-bar";
 import { CreateUserDialog } from "@/components/admin/create-user-dialog";
 import { listUsers } from "@/server/services/usersService";
 import { listGroups } from "@/server/services/groupsService";
+import { listSubjects } from "@/server/services/subjectsService";
 import { roleLabel } from "@/lib/rbac";
 import type { Role, UserStatus } from "@/generated/prisma/enums";
 
@@ -26,8 +27,9 @@ export default async function AdminUsersPage({
 }) {
   const sp = await searchParams;
   const page = Number(sp.page ?? "1") || 1;
-  const [groups, result] = await Promise.all([
+  const [groups, subjects, result] = await Promise.all([
     listGroups(),
+    listSubjects(false),
     listUsers(
       {
         role: (sp.role as Role) || undefined,
@@ -52,7 +54,10 @@ export default async function AdminUsersPage({
               <Upload className="h-4 w-4" />
               Импорт из Excel
             </Link>
-            <CreateUserDialog groups={groups.map((g) => ({ id: g.id, name: g.name }))} />
+            <CreateUserDialog
+              groups={groups.map((g) => ({ id: g.id, name: g.name }))}
+              subjects={subjects.map((s) => ({ id: s.id, name: s.name }))}
+            />
           </>
         }
       />
@@ -65,7 +70,7 @@ export default async function AdminUsersPage({
             <TableHead>ФИО</TableHead>
             <TableHead>Логин</TableHead>
             <TableHead>Роль</TableHead>
-            <TableHead>Группа</TableHead>
+            <TableHead>Группа / Предметы</TableHead>
             <TableHead>Статус</TableHead>
           </TableRow>
         </TableHeader>
@@ -86,7 +91,13 @@ export default async function AdminUsersPage({
               </TableCell>
               <TableCell>{user.login}</TableCell>
               <TableCell>{roleLabel(user.role)}</TableCell>
-              <TableCell>{user.group?.name ?? "—"}</TableCell>
+              <TableCell>
+                {user.role === "STUDENT"
+                  ? user.group?.name ?? "—"
+                  : user.role === "TEACHER" || user.role === "METHODIST"
+                    ? user.subjects.map((s) => s.name).join(", ") || "—"
+                    : "—"}
+              </TableCell>
               <TableCell>
                 <Badge variant={STATUS_VARIANT[user.status]}>{STATUS_LABEL[user.status]}</Badge>
               </TableCell>

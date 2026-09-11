@@ -1,7 +1,14 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { requireApiRole, apiErrorResponse } from "@/lib/api-auth";
-import { listAssignments, createAssignment, TestVersionNotPublishedError, InvalidQuestionCountError } from "@/server/services/assignmentsService";
+import {
+  listAssignments,
+  createAssignment,
+  TestVersionNotPublishedError,
+  InvalidQuestionCountError,
+  SubjectNotAllowedError,
+} from "@/server/services/assignmentsService";
+import { getUserSubjectIds } from "@/server/services/subjectsService";
 
 export async function GET(request: Request) {
   try {
@@ -9,11 +16,13 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const onlyMine = searchParams.get("onlyMine") === "1";
     const status = searchParams.get("status");
+    const subjectIds = session.user.role === "ADMIN" ? undefined : await getUserSubjectIds(session.user.id);
     const assignments = await listAssignments({
       createdById: onlyMine ? session.user.id : undefined,
       status: status === "ACTIVE" || status === "CLOSED" ? status : undefined,
       groupId: searchParams.get("groupId") ?? undefined,
       topic: searchParams.get("topic") ?? undefined,
+      subjectIds,
     });
     return NextResponse.json({ assignments });
   } catch (error) {
@@ -47,13 +56,15 @@ export async function POST(request: Request) {
   try {
     const session = await requireApiRole(["ADMIN", "METHODIST", "TEACHER"]);
     const body = createSchema.parse(await request.json());
+    const allowedSubjectIds = session.user.role === "ADMIN" ? undefined : await getUserSubjectIds(session.user.id);
     const assignment = await createAssignment(
       {
         ...body,
         availableFrom: body.availableFrom ? new Date(body.availableFrom) : null,
         availableUntil: body.availableUntil ? new Date(body.availableUntil) : null,
       },
-      session.user.id
+      session.user.id,
+      allowedSubjectIds
     );
     return NextResponse.json({ assignment }, { status: 201 });
   } catch (error) {
@@ -62,6 +73,9 @@ export async function POST(request: Request) {
     }
     if (error instanceof TestVersionNotPublishedError || error instanceof InvalidQuestionCountError) {
       return NextResponse.json({ error: error.message }, { status: 409 });
+    }
+    if (error instanceof SubjectNotAllowedError) {
+      return NextResponse.json({ error: error.message }, { status: 403 });
     }
     return apiErrorResponse(error);
   }

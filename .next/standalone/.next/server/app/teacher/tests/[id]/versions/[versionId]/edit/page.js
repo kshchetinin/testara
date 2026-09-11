@@ -1,5 +1,5 @@
 var R=require("../../../../../../../chunks/ssr/[turbopack]_runtime.js")("server/app/teacher/tests/[id]/versions/[versionId]/edit/page.js")
-R.c("server/chunks/ssr/[root-of-the-server]__11g1ctb._.js")
+R.c("server/chunks/ssr/[root-of-the-server]__0uke5wd._.js")
 R.c("server/chunks/ssr/node_modules_next_dist_1n3w9lb._.js")
 R.c("server/chunks/ssr/[root-of-the-server]__1odafg9._.js")
 R.c("server/chunks/ssr/[root-of-the-server]__17v-f6m._.js")
@@ -15,5 +15,5 @@ R.c("server/chunks/ssr/node_modules_next_dist_0drixxt._.js")
 R.c("server/chunks/ssr/_1h_ct26._.js")
 R.c("server/chunks/ssr/src_lib_utils_ts_0m4hn6s._.js")
 R.c("server/chunks/ssr/1oeh_server_app_teacher_tests_[id]_versions_[versionId]_edit_page_actions_1sj4ib5.js")
-R.m(39272)
-module.exports=R.m(39272).exports
+R.m(60308)
+module.exports=R.m(60308).exports

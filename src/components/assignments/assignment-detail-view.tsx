@@ -4,8 +4,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { AssignmentStatusToggle } from "./assignment-status-toggle";
+import { AssignmentDeleteButton } from "./assignment-delete-button";
 import { getAssignmentDetail } from "@/server/services/assignmentsService";
 import { getQuestionAnalytics } from "@/server/services/resultsService";
+import { auth } from "@/lib/auth";
 
 const SETTING_LABELS: Record<string, (a: NonNullable<Awaited<ReturnType<typeof getAssignmentDetail>>>) => string> = {
   window: (a) =>
@@ -16,9 +18,12 @@ const SETTING_LABELS: Record<string, (a: NonNullable<Awaited<ReturnType<typeof g
   attempts: (a) => `${a.attemptsAllowed}`,
 };
 
-export async function AssignmentDetailView({ assignmentId }: { assignmentId: string }) {
+export async function AssignmentDetailView({ assignmentId, basePath }: { assignmentId: string; basePath: string }) {
   const assignment = await getAssignmentDetail(assignmentId);
   if (!assignment) notFound();
+
+  const session = await auth();
+  const canDelete = assignment.attempts.length === 0 && (session!.user.role === "ADMIN" || assignment.createdById === session!.user.id);
 
   const attemptByStudent = new Map(assignment.attempts.filter((a) => a.status !== "ABANDONED").map((a) => [a.studentId, a]));
   const studentsById = new Map(
@@ -34,7 +39,12 @@ export async function AssignmentDetailView({ assignmentId }: { assignmentId: str
       <PageHeader
         title={assignment.title || assignment.testVersion.test.title}
         description={`${assignment.testVersion.test.title} · версия ${assignment.testVersion.versionNumber}`}
-        actions={<AssignmentStatusToggle id={assignment.id} status={assignment.status} />}
+        actions={
+          <>
+            <AssignmentStatusToggle id={assignment.id} status={assignment.status} />
+            {canDelete && <AssignmentDeleteButton id={assignment.id} basePath={basePath} />}
+          </>
+        }
       />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">

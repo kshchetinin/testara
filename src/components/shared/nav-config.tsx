@@ -1,4 +1,4 @@
-import { LayoutDashboard, Users, UsersRound, FileText, ClipboardList, BarChart3, ScrollText } from "lucide-react";
+import { LayoutDashboard, Users, UsersRound, FileText, ClipboardList, BarChart3, ScrollText, BookMarked } from "lucide-react";
 import type { NavItem } from "./sidebar-nav";
 
 export const NAV_CONFIG: Record<"admin" | "teacher" | "student", NavItem[]> = {
@@ -6,6 +6,7 @@ export const NAV_CONFIG: Record<"admin" | "teacher" | "student", NavItem[]> = {
     { href: "/admin", label: "Дашборд", icon: LayoutDashboard },
     { href: "/admin/users", label: "Пользователи", icon: Users },
     { href: "/admin/groups", label: "Группы", icon: UsersRound },
+    { href: "/admin/subjects", label: "Предметы", icon: BookMarked },
     { href: "/admin/tests", label: "Тесты", icon: FileText },
     { href: "/admin/assignments", label: "Назначения", icon: ClipboardList },
     { href: "/admin/results", label: "Результаты", icon: BarChart3 },

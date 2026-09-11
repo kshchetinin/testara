@@ -42,6 +42,11 @@
           "async": true,
           "codeHash": null
         },
+        "app/admin/subjects/page": {
+          "moduleId": 26387,
+          "async": true,
+          "codeHash": null
+        },
         "app/admin/tests/[id]/page": {
           "moduleId": 60827,
           "async": true,

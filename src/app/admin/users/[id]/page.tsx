@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { UserDetailPanel } from "@/components/admin/user-detail-panel";
 import { getUserDetail } from "@/server/services/usersService";
 import { listGroups } from "@/server/services/groupsService";
+import { listSubjects } from "@/server/services/subjectsService";
 
 const ATTEMPT_STATUS_LABEL: Record<string, string> = {
   IN_PROGRESS: "В процессе",
@@ -16,7 +17,7 @@ const ATTEMPT_STATUS_LABEL: Record<string, string> = {
 
 export default async function AdminUserDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const [result, groups] = await Promise.all([getUserDetail(id), listGroups()]);
+  const [result, groups, subjects] = await Promise.all([getUserDetail(id), listGroups(), listSubjects(false)]);
   if (!result) notFound();
 
   const { user, attempts } = result;
@@ -27,8 +28,9 @@ export default async function AdminUserDetailPage({ params }: { params: Promise<
       <PageHeader title={fullName} description={`Логин: ${user.login}`} />
 
       <UserDetailPanel
-        user={user}
+        user={{ ...user, subjectIds: user.subjects.map((s) => s.id) }}
         groups={groups.filter((g) => g.status === "ACTIVE").map((g) => ({ id: g.id, name: g.name }))}
+        subjects={subjects.map((s) => ({ id: s.id, name: s.name }))}
       />
 
       {user.role === "STUDENT" && (

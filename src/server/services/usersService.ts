@@ -30,7 +30,7 @@ export async function listUsers(filters: UserFilters, page = 1, pageSize = 25) {
   const [users, total] = await Promise.all([
     prisma.user.findMany({
       where,
-      include: { group: { select: { id: true, name: true } } },
+      include: { group: { select: { id: true, name: true } }, subjects: { select: { id: true, name: true } } },
       orderBy: [{ lastName: "asc" }, { firstName: "asc" }],
       skip: (page - 1) * pageSize,
       take: pageSize,
@@ -52,7 +52,7 @@ export async function listActiveStudents() {
 export async function getUserDetail(id: string) {
   const user = await prisma.user.findUnique({
     where: { id },
-    include: { group: true },
+    include: { group: true, subjects: true },
   });
   if (!user) return null;
 
@@ -75,10 +75,12 @@ export interface CreateUserInput {
   middleName?: string;
   role: Role;
   groupId?: string | null;
+  subjectIds?: string[];
 }
 
 export async function createUser(input: CreateUserInput, actorId: string) {
   const passwordHash = await bcrypt.hash(input.password, 10);
+  const subjectScoped = input.role === "TEACHER" || input.role === "METHODIST";
   return prisma.$transaction(async (tx) => {
     const user = await tx.user.create({
       data: {
@@ -89,6 +91,7 @@ export async function createUser(input: CreateUserInput, actorId: string) {
         middleName: input.middleName || null,
         role: input.role,
         groupId: input.role === "STUDENT" ? input.groupId ?? null : null,
+        subjects: subjectScoped && input.subjectIds?.length ? { connect: input.subjectIds.map((id) => ({ id })) } : undefined,
       },
     });
     await logAudit(
@@ -104,12 +107,20 @@ export interface UpdateUserInput {
   lastName?: string;
   middleName?: string | null;
   groupId?: string | null;
+  subjectIds?: string[];
 }
 
 export async function updateUser(id: string, input: UpdateUserInput, actorId: string) {
+  const { subjectIds, ...rest } = input;
   return prisma.$transaction(async (tx) => {
-    const user = await tx.user.update({ where: { id }, data: input });
-    await logAudit({ userId: actorId, action: "USER_UPDATE", entityType: "User", entityId: user.id, metadata: { ...input } }, tx);
+    const user = await tx.user.update({
+      where: { id },
+      data: {
+        ...rest,
+        ...(subjectIds !== undefined ? { subjects: { set: subjectIds.map((sid) => ({ id: sid })) } } : {}),
+      },
+    });
+    await logAudit({ userId: actorId, action: "USER_UPDATE", entityType: "User", entityId: user.id, metadata: { ...rest, subjectIds } }, tx);
     return user;
   });
 }

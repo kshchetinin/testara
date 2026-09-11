@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/components/ui/toast";
 
@@ -21,11 +22,17 @@ interface VersionRow {
   _count: { questions: number; assignments: number };
 }
 
+interface SubjectOption {
+  id: string;
+  name: string;
+}
+
 interface TestData {
   id: string;
   title: string;
   description: string | null;
-  subject: string;
+  subjectId: string;
+  subject: SubjectOption;
   topic: string | null;
   status: "ACTIVE" | "ARCHIVED";
   versions: VersionRow[];
@@ -43,12 +50,25 @@ export function TestDetailPanel({ test, basePath, canManage }: { test: TestData;
   const { toast } = useToast();
   const [form, setForm] = React.useState({
     title: test.title,
-    subject: test.subject,
+    subjectId: test.subjectId,
     topic: test.topic ?? "",
     description: test.description ?? "",
   });
+  const [subjects, setSubjects] = React.useState<SubjectOption[]>([test.subject]);
   const [saving, setSaving] = React.useState(false);
   const [creatingVersion, setCreatingVersion] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!canManage) return;
+    fetch("/api/subjects?mine=1")
+      .then((res) => res.json())
+      .then((data: { subjects?: SubjectOption[] }) => {
+        const list = data.subjects ?? [];
+        setSubjects(list.some((s) => s.id === test.subject.id) ? list : [test.subject, ...list]);
+      })
+      .catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [canManage]);
 
   const hasDraft = test.versions.some((v) => v.status === "DRAFT");
 
@@ -118,7 +138,13 @@ export function TestDetailPanel({ test, basePath, canManage }: { test: TestData;
             <div className="grid grid-cols-2 gap-3">
               <div className="flex flex-col gap-1.5">
                 <Label>Дисциплина</Label>
-                <Input value={form.subject} onChange={(e) => setForm((f) => ({ ...f, subject: e.target.value }))} disabled={!canManage} required />
+                <Select value={form.subjectId} onChange={(e) => setForm((f) => ({ ...f, subjectId: e.target.value }))} disabled={!canManage} required>
+                  {subjects.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.name}
+                    </option>
+                  ))}
+                </Select>
               </div>
               <div className="flex flex-col gap-1.5">
                 <Label>Тема</Label>

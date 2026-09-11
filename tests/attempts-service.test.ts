@@ -59,7 +59,8 @@ describe("attempts service — full student lifecycle", () => {
     });
     otherGroupStudentId = otherStudent.id;
 
-    const { test, version } = await createTest({ title: "IT: Тест для прохождения", subject: "Онкология" }, adminId);
+    const subject = await prisma.subject.upsert({ where: { name: "Онкология" }, update: {}, create: { name: "Онкология" } });
+    const { test, version } = await createTest({ title: "IT: Тест для прохождения", subjectId: subject.id }, adminId);
     testId = test.id;
     const updated = await replaceQuestions(
       version.id,

@@ -10,6 +10,7 @@
  */
 export type * from './models/User'
 export type * from './models/Group'
+export type * from './models/Subject'
 export type * from './models/Test'
 export type * from './models/TestVersion'
 export type * from './models/Question'

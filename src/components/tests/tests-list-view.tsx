@@ -8,8 +8,16 @@ import { CreateTestDialog } from "./create-test-dialog";
 import { listTests } from "@/server/services/testsService";
 import { cn } from "@/lib/utils";
 
-export async function TestsListView({ basePath, canManage }: { basePath: string; canManage: boolean }) {
-  const tests = await listTests();
+export async function TestsListView({
+  basePath,
+  canManage,
+  subjectIds,
+}: {
+  basePath: string;
+  canManage: boolean;
+  subjectIds?: string[];
+}) {
+  const tests = await listTests({ subjectIds });
 
   return (
     <div>
@@ -56,7 +64,7 @@ export async function TestsListView({ basePath, canManage }: { basePath: string;
                     {test.title}
                   </Link>
                 </TableCell>
-                <TableCell>{test.subject}</TableCell>
+                <TableCell>{test.subject.name}</TableCell>
                 <TableCell>
                   {test.author.lastName} {test.author.firstName}
                 </TableCell>
